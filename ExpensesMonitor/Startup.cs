@@ -1,5 +1,6 @@
 using ExpensesMonitor.Data;
 using ExpensesMonitor.SharedLibrary.Data;
+using ExpensesMonitor.SharedLibrary.Data.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -42,6 +43,8 @@ namespace ExpensesMonitor
                  )
               );
 
+            services.AddTransient<ICategoryRepository, CategoryRepository>();
+            services.AddTransient<IExpenseRepository, ExpenseRepository>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();
