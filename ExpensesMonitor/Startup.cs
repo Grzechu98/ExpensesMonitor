@@ -1,4 +1,5 @@
 using ExpensesMonitor.Data;
+using ExpensesMonitor.SharedLibrary.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -32,6 +33,16 @@ namespace ExpensesMonitor
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            string assemblyName = typeof(MainContext).Namespace;
+            services.AddDbContext<MainContext>(options =>
+             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
+                 optionsBuilder =>
+                    optionsBuilder.MigrationsAssembly(assemblyName)
+                 )
+              );
+
+
             services.AddControllersWithViews();
             services.AddRazorPages();
         }
