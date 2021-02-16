@@ -39,7 +39,7 @@ namespace ExpensesMonitor
             services.AddDbContext<MainContext>(options =>
              options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
                  optionsBuilder =>
-                    optionsBuilder.MigrationsAssembly(assemblyName)
+                    optionsBuilder.MigrationsAssembly("ExpensesMonitor")
                  )
               );
 
@@ -76,7 +76,7 @@ namespace ExpensesMonitor
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Expenses}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
         }

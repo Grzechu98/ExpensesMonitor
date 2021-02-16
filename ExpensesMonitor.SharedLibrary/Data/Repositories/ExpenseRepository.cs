@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExpensesMonitor.SharedLibrary.Data.Repositories
 {
     public interface IExpenseRepository
     {
         Task<IEnumerable<ExpenseModel>> GetExpenses(Func<ExpenseModel, bool> condition);
-        Task<ExpenseModel> GetExpense(int id);
+        Task<ExpenseModel> GetExpense(Func<ExpenseModel, bool> condition);
         Task InsertExpense(ExpenseModel expense);
         Task UpdateExpense(ExpenseModel expense);
         Task RemoveExpense(ExpenseModel expense);
@@ -23,14 +24,15 @@ namespace ExpensesMonitor.SharedLibrary.Data.Repositories
         {
             _context = context;
         }
-        public async Task<ExpenseModel> GetExpense(int id)
+        public async Task<ExpenseModel> GetExpense(Func<ExpenseModel, bool> condition)
         {
-            return await _context.Expenses.FindAsync(id);
+            return await Task.FromResult(_context.Expenses.Where(condition).FirstOrDefault());
         }
 
         public async Task<IEnumerable<ExpenseModel>> GetExpenses(Func<ExpenseModel, bool> condition)
         {
-            return await Task.FromResult(_context.Expenses.Where(condition).ToList());
+            var result = await Task.FromResult(_context.Expenses.Include(e => e.Category).Where(condition).ToList());
+            return result.OrderByDescending(e => e.CreationDate);
         }
 
         public async Task InsertExpense(ExpenseModel expense)
