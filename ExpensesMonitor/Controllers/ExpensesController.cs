@@ -9,6 +9,7 @@ using ExpensesMonitor.SharedLibrary.Data;
 using ExpensesMonitor.SharedLibrary.Models;
 using ExpensesMonitor.SharedLibrary.Data.Repositories;
 using Microsoft.AspNetCore.Identity;
+using ExpensesMonitor.Services;
 
 namespace ExpensesMonitor.Controllers
 {
@@ -17,17 +18,20 @@ namespace ExpensesMonitor.Controllers
         private readonly IExpenseRepository _repository;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IChartService _service;
 
-        public ExpensesController(IExpenseRepository repository,ICategoryRepository categoryRepository, UserManager<IdentityUser> userManager)
+        public ExpensesController(IExpenseRepository repository,ICategoryRepository categoryRepository, UserManager<IdentityUser> userManager, IChartService service)
         {
             _repository = repository;
             _userManager = userManager;
             _categoryRepository = categoryRepository;
+            _service = service;
         }
 
         // GET: Expenses
         public async Task<IActionResult> Index()
         {
+            ViewData["chart"] = await _service.GenerateBasicExpensesChart(_userManager.GetUserId(User));
             return View(await _repository.GetExpenses(e => e.UserId == _userManager.GetUserId(User)));
         }
 

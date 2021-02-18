@@ -6,12 +6,15 @@
 @{
     ViewData["Title"] = "Index";
 }
-
-<h1>Index</h1>
+@{ChartJSCore.Models.Chart chart = (ChartJSCore.Models.Chart)ViewData["chart"]; }
 @if (SignInManager.IsSignedIn(User))
 {
+    <div><canvas id="barChart"></canvas></div>
+
+
+    <br />
     <p>
-        <a asp-action="Create">Create New</a>
+        <a class="btn btn-success" asp-action="Create">Create New</a>
     </p>
     <table class="table">
         <thead>
@@ -48,11 +51,19 @@
                         @Html.DisplayFor(modelItem => item.Category.CategoryName)
                     </td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        <a class="btn btn-primary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
+
+    @section Scripts {
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+        <script>
+        @Html.Raw(chart.CreateChartCode("barChart"));
+        </script>
+    }
+
 }
