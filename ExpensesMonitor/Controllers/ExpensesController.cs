@@ -10,9 +10,11 @@ using ExpensesMonitor.SharedLibrary.Models;
 using ExpensesMonitor.SharedLibrary.Data.Repositories;
 using Microsoft.AspNetCore.Identity;
 using ExpensesMonitor.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ExpensesMonitor.Controllers
 {
+    [Authorize]
     public class ExpensesController : Controller
     {
         private readonly IExpenseRepository _repository;
@@ -32,14 +34,14 @@ namespace ExpensesMonitor.Controllers
         public async Task<IActionResult> Index()
         {
             ViewData["chart"] = await _service.GenerateBasicExpensesChart(_userManager.GetUserId(User));
-            return View(await _repository.GetExpenses(e => e.UserId == _userManager.GetUserId(User)));
+            return View(await _repository.GetExpenses(e => e.UserId == _userManager.GetUserId(User) && e.CreationDate >= TimePeriod.Month));
         }
 
         // GET: Expenses/Create
         public async Task<IActionResult> CreateAsync()
         {
             ViewData["CategoryId"] = new SelectList(await _categoryRepository.GetCategories(), "Id", "CategoryName");
-            return View();
+            return PartialView("_AddPartial");
         }
 
         // POST: Expenses/Create
@@ -53,12 +55,12 @@ namespace ExpensesMonitor.Controllers
             expenseModel.UserId = _userManager.GetUserId(User);
             if (ModelState.IsValid)
             {
-               await _repository.InsertExpense(expenseModel);
+                await _repository.InsertExpense(expenseModel);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(await _categoryRepository.GetCategories(), "Id", "CategoryName", expenseModel.CategoryId);
-            return View(expenseModel);
+            return RedirectToAction(nameof(Index));
         }
+         
 
         // GET: Expenses/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -74,7 +76,7 @@ namespace ExpensesMonitor.Controllers
                 return NotFound();
             }
             ViewData["CategoryId"] = new SelectList(await _categoryRepository.GetCategories(), "Id", "CategoryName", expenseModel.CategoryId);
-            return View(expenseModel);
+            return PartialView("_EditPartial",expenseModel);
         }
 
         // POST: Expenses/Edit/5
@@ -103,7 +105,7 @@ namespace ExpensesMonitor.Controllers
                     }
                     else
                     {
-                        throw;
+                        return RedirectToAction(nameof(Index));
                     }
                 }
                 return RedirectToAction(nameof(Index));
@@ -126,7 +128,7 @@ namespace ExpensesMonitor.Controllers
                 return NotFound();
             }
 
-            return View(expenseModel);
+            return PartialView("_DeletePartial",expenseModel);
         }
 
         // POST: Expenses/Delete/5
@@ -138,7 +140,10 @@ namespace ExpensesMonitor.Controllers
             await _repository.RemoveExpense(expenseModel);
             return RedirectToAction(nameof(Index));
         }
-
+        public async Task<IActionResult> All()
+        {
+            return View(await _repository.GetExpenses(e => e.UserId == _userManager.GetUserId(User)));
+        }
         private async Task<bool> ExpenseModelExists(int id)
         {
             var expenseModel = await _repository.GetExpense(e => e.UserId == _userManager.GetUserId(User) && e.Id == id);

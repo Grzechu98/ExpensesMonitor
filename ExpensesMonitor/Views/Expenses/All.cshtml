@@ -1,0 +1,90 @@
+﻿@model IEnumerable<ExpensesMonitor.SharedLibrary.Models.ExpenseModel>
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+@{
+    ViewData["Title"] = "All";
+}
+
+<div id="modalWrapper">
+
+</div>
+
+@{ChartJSCore.Models.Chart chart = (ChartJSCore.Models.Chart)ViewData["chart"]; }
+<p>
+    <button type="button" class="btn btn- btn-success" onclick="create()">Create New</button>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreationDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Amount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreationDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category.CategoryName)
+                </td>
+                <td>
+                    <button type="button" class="btn btn-primary" onclick="edit(@item.Id)">Edit</button>
+                    <button type="button" class="btn btn-danger" onclick="deleteexpense(@item.Id)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script>
+        @Html.Raw(chart.CreateChartCode("barChart"));
+    </script>
+    <script>
+             function create() {
+                $.get("@Url.Action("Create")",
+                    function (data) {
+                        $('#modalWrapper').html(data);
+                        $("#createModal").modal("show");
+                });
+             }
+            function edit(expenseId) {
+                $.get("@Url.Action("Edit")/" + expenseId,
+                    function (data) {
+                        $('#modalWrapper').html(data);
+                        $("#editModal").modal("show");
+                });
+            }
+            function deleteexpense(expenseId) {
+                $.get("@Url.Action("Delete")/" + expenseId,
+                    function (data) {
+                        $('#modalWrapper').html(data);
+                        $("#deleteModal").modal("show");
+                });
+             }
+    </script>
+}

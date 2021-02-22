@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ChartJSCore.Helpers;
 using ChartJSCore.Models;
 using ExpensesMonitor.SharedLibrary.Data.Repositories;
 using ExpensesMonitor.SharedLibrary.Models;
@@ -47,6 +48,10 @@ namespace ExpensesMonitor.Services
             {
                 Label = "Expenses per Category",
                 Data = amountperCategory,
+                BackgroundColor = new List<ChartColor>
+                {
+                    ChartColor.FromRgba(255, 99, 132, 1),
+                },
             };
 
             data.Datasets = new List<Dataset> { dataset };
@@ -62,7 +67,9 @@ namespace ExpensesMonitor.Services
                     PaddingObject = new PaddingObject
                     {
                         Left = 10,
-                        Right = 12
+                        Right = 12,
+                        Top = 10,
+                        Bottom = 10
                     }
                 }
             };
@@ -111,8 +118,8 @@ namespace ExpensesMonitor.Services
                     new BarScale
                     {
                         BarPercentage = 0.5,
-                        BarThickness = 6,
-                        MaxBarThickness = 8,
+                        BarThickness = 25,
+                        MaxBarThickness = 28,
                         MinBarLength = 2,
                         GridLines = new GridLine()
                         {
