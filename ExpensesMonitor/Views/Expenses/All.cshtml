@@ -11,7 +11,6 @@
 
 </div>
 
-@{ChartJSCore.Models.Chart chart = (ChartJSCore.Models.Chart)ViewData["chart"]; }
 <p>
     <button type="button" class="btn btn- btn-success" onclick="create()">Create New</button>
 </p>
@@ -60,10 +59,6 @@
 
 
 @section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-    <script>
-        @Html.Raw(chart.CreateChartCode("barChart"));
-    </script>
     <script>
              function create() {
                 $.get("@Url.Action("Create")",
