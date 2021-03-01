@@ -64,9 +64,14 @@ namespace ExpensesMonitor.Migrations
                             Id = 6,
                             CategoryName = "Fuel"
                         },
+                          new
+                          {
+                              Id = 7,
+                              CategoryName = "Cosmetics"
+                          },
                         new
                         {
-                            Id = 7,
+                            Id = 8,
                             CategoryName = "Others"
                         });
                 });

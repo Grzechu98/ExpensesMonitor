@@ -27,7 +27,8 @@ namespace ExpensesMonitor.SharedLibrary.Data
                 new CategoryModel { Id = 4, CategoryName = "Entertainment" },
                 new CategoryModel { Id = 5, CategoryName = "Alcohol" },
                 new CategoryModel { Id = 6, CategoryName = "Fuel" },
-                new CategoryModel { Id = 7, CategoryName = "Others" }
+                new CategoryModel { Id = 7, CategoryName = "Cosmetics" },
+                new CategoryModel { Id = 8, CategoryName = "Others" }
                 );
         }
     }

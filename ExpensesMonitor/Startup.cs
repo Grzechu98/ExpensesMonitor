@@ -32,17 +32,18 @@ namespace ExpensesMonitor
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    Configuration.GetConnectionString("DockerDb")));
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             string assemblyName = typeof(MainContext).Namespace;
             services.AddDbContext<MainContext>(options =>
-             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
+             options.UseSqlServer(Configuration.GetConnectionString("DockerDb"),
                  optionsBuilder =>
                     optionsBuilder.MigrationsAssembly("ExpensesMonitor")
                  )
               );
+
 
             services.AddTransient<ICategoryRepository, CategoryRepository>();
             services.AddTransient<IExpenseRepository, ExpenseRepository>();
@@ -50,6 +51,7 @@ namespace ExpensesMonitor
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,6 +67,19 @@ namespace ExpensesMonitor
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+            }
+            using (var serviceScope = app.ApplicationServices
+           .GetRequiredService<IServiceScopeFactory>()
+           .CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>())
+                {
+                    context.Database.Migrate();
+                }
+                using (var context = serviceScope.ServiceProvider.GetService<MainContext>())
+                {
+                    context.Database.Migrate();
+                }
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
